@@ -78,8 +78,17 @@ export const createSale = async (req, res) => {
                 totalPrice: itemTotal
             });
 
-            // Update product stock
+            // Update product stock and average sale price
+            const oldTotalSold = product.totalSold || 0;
+            const oldAvgSalePrice = product.averageSalePrice || 0;
+            const newTotalSold = oldTotalSold + item.quantity;
+
+            // Weighted average calculation for sale price
+            const newAvgSalePrice = ((oldTotalSold * oldAvgSalePrice) + (item.quantity * item.salePrice)) / newTotalSold;
+
             product.currentStock -= item.quantity;
+            product.totalSold = newTotalSold;
+            product.averageSalePrice = newAvgSalePrice;
             await product.save({ session });
         }
 
@@ -130,6 +139,17 @@ export const deleteSale = async (req, res) => {
             const product = await Product.findById(item.product).session(session);
 
             if (product) {
+                const oldTotalSold = product.totalSold || 0;
+                const newTotalSold = Math.max(0, oldTotalSold - item.quantity);
+
+                if (newTotalSold === 0) {
+                    product.averageSalePrice = 0;
+                } else {
+                    const totalSaleVal = (oldTotalSold * product.averageSalePrice) - (item.quantity * item.salePrice);
+                    product.averageSalePrice = totalSaleVal / newTotalSold;
+                }
+
+                product.totalSold = newTotalSold;
                 product.currentStock += item.quantity;
                 await product.save({ session });
             }

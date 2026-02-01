@@ -20,6 +20,16 @@ const productSchema = new mongoose.Schema({
         type: Number,
         default: 0,
         min: 0
+    },
+    averageSalePrice: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    totalSold: {
+        type: Number,
+        default: 0,
+        min: 0
     }
 }, {
     timestamps: true
