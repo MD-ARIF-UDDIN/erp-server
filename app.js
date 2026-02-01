@@ -13,6 +13,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Home route
+app.get('/', (req, res) => {
+    res.json({
+        message: "Welcome to the ERP Backbone! 🚀",
+        status: "Running (and somehow avoiding a mid-life crisis)",
+        mood: "Optimistic but caffeine-depleted ☕",
+        note: "If I'm slow, please tell the frontend to stop asking so many questions. I'm sensitive."
+    });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
